@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+    #page-home.active {
+      display: flex;
+      justify-content: center;
+    }
+    .cont {
+      flex: 1;
+      padding: 20px;
+    }
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      width: 100%;
+      background-color: black;
+      color: white;
+      margin-top: auto;
+    }
+    .boxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      width: 900px;
+    }
+    .box {
+      width: 200px;
+      height: 250px;
+      border-radius: 10px;
+      border: 1px solid black;
+    }
+    nav p {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    #page-register,
+    #page-login {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+    #page-register h2,
+    #page-login h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+    .subtitle {
+      color: #555;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    form label {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    form input {
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      outline: none;
+    }
+    form input:focus {
+      border-color: #000;
+    }
+    form button {
+      margin-top: 15px;
+      padding: 12px;
+      background-color: black;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    form button:hover {
+      background-color: #333;
+    }
+
+    #usersList {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      list-style: none;
+    }
+    #usersList li {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+  </style>
+  <body>
+    <nav
+      style="
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        gap: 10px;
+        width: 100%;
+        padding: 10px;
+        background-color: black;
+        color: white;
+        z-index: 10;
+      "
+    >
+      <p style="color: red; cursor: pointer" onclick="showPage('home')">Nur</p>
+      <p style="cursor: pointer" onclick="showPage('home')">Home</p>
+      <p style="cursor: pointer" onclick="showPage('register')">
+        Register-page
+      </p>
+      <p style="cursor: pointer" onclick="showPage('login')">Login-page</p>
+      <p
+        onclick="
+          showPage('users');
+          loadUsers();
+        "
+        style="cursor: pointer"
+      >
+        Data-users
+      </p>
+    </nav>
+
+    <div class="cont">
+      <div id="page-home" class="page active">
+        <div class="boxes">
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+        </div>
+      </div>
+
+      <div id="page-register" class="page">
+        <h2>Registration</h2>
+        <p class="subtitle">Create an account</p>
+        <form id="registerForm">
+          <label for="regName">Your name</label>
+          <input
+            type="text"
+            id="regName"
+            placeholder="enter your name"
+            required
+          />
+
+          <label for="regEmail">Email</label>
+          <input
+            type="email"
+            id="regEmail"
+            placeholder="example@mail.com"
+            required
+          />
+
+          <label for="regPassword">Password</label>
+          <input
+            type="password"
+            id="regPassword"
+            placeholder="minimum 6 symbols"
+            minlength="6"
+            required
+          />
+
+          <button type="submit">registration</button>
+        </form>
+      </div>
+
+      <div id="page-login" class="page">
+        <h2>Login</h2>
+        <p class="subtitle">Enter your account</p>
+        <form id="loginForm">
+          <label for="loginName">Your name</label>
+          <input type="text" id="loginName" placeholder="your name" required />
+
+          <label for="loginPassword">Password</label>
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="your password"
+            required
+          />
+
+          <button type="submit">login</button>
+        </form>
+      </div>
+
+      <div id="page-users" class="page">
+        <h2 style="text-align: center">Users</h2>
+        <ul id="usersList"></ul>
+      </div>
+    </div>
+
+    <footer style="gap: 5px">
+      <p style="cursor: pointer; margin: 0">made by</p>
+      <p style="color: red; cursor: pointer; margin: 0">NURGASUR</p>
+    </footer>
+
+    <script>
+      function showPage(pageId) {
+        document
+          .querySelectorAll(".page")
+          .forEach((el) => el.classList.remove("active"));
+        const target = document.getElementById(`page-${pageId}`);
+        if (target) target.classList.add("active");
+      }
+
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const name = document.getElementById("regName").value.trim();
+          const email = document.getElementById("regEmail").value.trim();
+          const password = document.getElementById("regPassword").value;
+
+          if (password.length < 6) {
+            alert("min 6 symbols");
+            return;
+          }
+
+          const response = await fetch("http://localhost:3000/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password }),
+          });
+
+          if (response.ok) {
+            alert("Регистрация успешна!");
+            this.reset();
+            showPage("home");
+          }
+        });
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const name = document.getElementById("loginName").value.trim();
+          const password = document.getElementById("loginPassword").value;
+
+          const response = await fetch("http://localhost:3000/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, password }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert(result.message);
+            this.reset();
+            showPage("home");
+          } else {
+            alert(result.message);
+          }
+        });
+
+      async function loadUsers() {
+        const response = await fetch("http://localhost:3000/users");
+        const users = await response.json();
+
+        const list = document.getElementById("usersList");
+        list.innerHTML = "";
+
+        if (users.length === 0) {
+          list.innerHTML = "<li>Пока нет пользователей</li>";
+          return;
+        }
+
+        users.forEach((user) => {
+          const li = document.createElement("li");
+          li.textContent = user.name + " — " + user.email;
+          list.appendChild(li);
+        });
+      }
+    </script>
+  </body>
+</html>
