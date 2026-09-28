@@ -254,7 +254,7 @@
           });
 
           if (response.ok) {
-            alert("Регистрация успешна!");
+            alert("succes");
             this.reset();
             showPage("home");
           }
@@ -286,22 +286,83 @@
         });
 
       async function loadUsers() {
-        const response = await fetch("http://localhost:3000/users");
+        const response = await fetch("http://localhost:3000/users", {
+          method: "GET",
+        });
         const users = await response.json();
 
         const list = document.getElementById("usersList");
         list.innerHTML = "";
 
         if (users.length === 0) {
-          list.innerHTML = "<li>Пока нет пользователей</li>";
+          list.innerHTML = "<li>there is no users now</li>";
           return;
         }
 
         users.forEach((user) => {
           const li = document.createElement("li");
-          li.textContent = user.name + " — " + user.email;
+          li.style.display = "flex";
+          li.style.justifyContent = "space-between";
+          li.style.alignItems = "center";
+          li.style.gap = "10px";
+
+          const span = document.createElement("span");
+          span.textContent = user.name + " — " + user.email;
+
+          const btns = document.createElement("span");
+          btns.style.display = "flex";
+          btns.style.gap = "6px";
+
+          const editBtn = document.createElement("button");
+          editBtn.textContent = "Change name";
+          editBtn.onclick = () => updateUser(user.id, user.name);
+
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "Delete";
+          delBtn.onclick = () => deleteUser(user.id);
+
+          btns.appendChild(editBtn);
+          btns.appendChild(delBtn);
+
+          li.appendChild(span);
+          li.appendChild(btns);
           list.appendChild(li);
         });
+      }
+
+      async function updateUser(id, oldName) {
+        const newName = prompt("New username:", oldName);
+        if (!newName || !newName.trim()) return;
+
+        const response = await fetch(`http://localhost:3000/users/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: newName.trim() }),
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(result.message);
+          loadUsers();
+        } else {
+          alert(result.message);
+        }
+      }
+
+      async function deleteUser(id) {
+        if (!confirm("delete this user")) return;
+
+        const response = await fetch(`http://localhost:3000/users/${id}`, {
+          method: "DELETE",
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(result.message);
+          loadUsers();
+        } else {
+          alert(result.message);
+        }
       }
     </script>
   </body>
